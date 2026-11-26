@@ -1,7 +1,6 @@
 # vfox Integrator
 
-Source: <https://github.com/dr5hx/vfox-integrator> — releases:
-<https://github.com/dr5hx/vfox-integrator/releases>
+<https://github.com/dr5hx/vfox-integrator>
 
 An IntelliJ Platform plugin that detects SDKs managed by [vfox](https://vfox.dev) and offers them as
 selectable SDK candidates in the IDE, so vfox paths no longer have to be registered by hand.
@@ -63,6 +62,13 @@ The plugin **offers candidates**; it does not silently rewrite a project's confi
 Build-tool integrations that change how builds run (terminal, Gradle JVM, Maven home, Run
 configurations) are **off by default** except the terminal; so is setting each project's own IDE
 SDKs. Turn them on in Settings → Tools → vfox SDKs.
+
+## Install
+
+Download `vfox-integrator-<version>-signed.zip` from the
+[latest release](https://github.com/dr5hx/vfox-integrator/releases/latest) and use
+**Settings → Plugins → ⚙ → Install Plugin from Disk**. The archive is signed with the author's key,
+which is what the JetBrains Marketplace checks before re-signing a plugin with its own certificate.
 
 ## Requirements
 
