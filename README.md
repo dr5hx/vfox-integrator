@@ -256,15 +256,18 @@ After that first upload, later versions go through Gradle.
 # 1. Bump `version` in gradle.properties and add a CHANGELOG.md entry — the Marketplace rejects a
 #    version it has already seen, and the changelog entry becomes the release's change notes.
 # 2. Publish. PUBLISH_TOKEN is prompted for if it is not already in the environment.
-pwsh -File scripts/publish.ps1                       # channel: alpha (the default)
-pwsh -File scripts/publish.ps1 -Channel default      # promote to a stable release
-pwsh -File scripts/publish.ps1 -DryRun               # build and sign, upload nothing
+pwsh -File scripts/publish.ps1                    # channel: default (Stable), what users see
+pwsh -File scripts/publish.ps1 -Channel alpha     # a pre-release on its own channel
+pwsh -File scripts/publish.ps1 -DryRun            # build and sign, upload nothing
 ```
 
-A non-default channel is a *separate repository*, so an `alpha` upload reaches
-`https://plugins.jetbrains.com/plugins/alpha/list` rather than everyone. The channel comes from
-`-Channel` / the `vfoxPublishChannel` Gradle property, defaulting to `alpha` because the current
-version is a pre-release.
+The channel must match the one chosen on the plugin's Marketplace page. It defaults to `default` —
+the Stable channel every user sees — so the plugin stays installable by anyone; an `alpha` version
+number does not by itself require a custom channel. A non-default channel is a *separate
+repository*: an `alpha` upload reaches only users who added
+`https://plugins.jetbrains.com/plugins/alpha/list`, and because a custom repository takes precedence
+over the default one, those users stop receiving stable updates while subscribed. The channel comes
+from `-Channel` / the `vfoxPublishChannel` Gradle property.
 
 The underlying Gradle tasks, if you prefer to drive them yourself:
 

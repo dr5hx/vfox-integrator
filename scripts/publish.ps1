@@ -23,9 +23,10 @@
     Where the PEM files live. Defaults to ~/.vfox-integrator-signing.
 
 .PARAMETER Channel
-    Release channel to publish to. Defaults to `alpha`, matching the pre-release version; the
-    Marketplace serves a non-default channel as a separate repository rather than releasing to
-    everyone. Pass `default` to publish a stable release.
+    Release channel to publish to. Defaults to `default` — the Marketplace's Stable channel, which
+    every user sees. Any other name (e.g. `alpha`) is served as a *separate repository*: only users
+    who add https://plugins.jetbrains.com/plugins/<channel>/list see it, and they stop receiving
+    stable updates while subscribed. Must match the channel chosen on the plugin's Marketplace page.
 
 .PARAMETER DryRun
     Build and sign without uploading.
@@ -33,7 +34,7 @@
 [CmdletBinding()]
 param(
     [string]$SigningDir = (Join-Path $HOME ".vfox-integrator-signing"),
-    [string]$Channel = "alpha",
+    [string]$Channel = "default",
     [switch]$DryRun
 )
 

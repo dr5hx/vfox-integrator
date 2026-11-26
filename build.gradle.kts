@@ -174,12 +174,16 @@ intellijPlatform {
     publishing {
         token = providers.environmentVariable("PUBLISH_TOKEN")
 
-        // A pre-release belongs on a non-default channel: the Marketplace keeps `alpha` as a
-        // separate repository (https://plugins.jetbrains.com/plugins/alpha/list) instead of
-        // releasing to everyone, which is what a 1.0.0-alpha should be. Promoting it to the
-        // default channel is a deliberate release decision, so it comes from a property rather
-        // than being hardcoded here.
-        channels = listOf(providers.gradleProperty("vfoxPublishChannel").getOrElse("alpha"))
+        // The default channel is the Marketplace's `Stable` release channel, which every user sees.
+        // A custom channel (e.g. `alpha`) is instead a *separate repository*: only users who add
+        // https://plugins.jetbrains.com/plugins/<channel>/list can see it, and because a custom
+        // repository takes precedence over the default one, they stop receiving stable updates.
+        //
+        // This plugin is released to the default channel so it stays installable by anyone. The
+        // channel is still configurable rather than hardcoded, because moving a pre-release to a
+        // custom channel later is a deliberate release decision: pass -Channel (publish.ps1) or
+        // -PvfoxPublishChannel=<name>.
+        channels = listOf(providers.gradleProperty("vfoxPublishChannel").getOrElse("default"))
     }
 
     pluginVerification {
