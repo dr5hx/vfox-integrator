@@ -6,7 +6,7 @@
 
 ### Changed
 
-- The plugin is now named **vfox Integrator** (id `com.dr5hx.vfox.integrator`, field-verification log
+- The plugin is now named **vfox Integrator** (id `com.dr5hx.vfox.integrator`, detection log
   `vfox-integrator.log`). It was `vfox recognize`.
 
 ### Added
