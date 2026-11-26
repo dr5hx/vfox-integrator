@@ -2,6 +2,29 @@
 
 # vfox Integrator Changelog
 
+## [1.0.0] - 2026-11-26
+
+First public release. The plugin detects SDKs managed by [vfox](https://vfox.dev) and offers every
+installed version as a selectable SDK candidate in JetBrains IDEs.
+
+- Registered through a real `SdkType` where the IDE models one (Java, Kotlin, Python), through the
+  IDE's own model where it does not (Go, Node.js), into the build tools (Maven home, Gradle JVM),
+  and onto `PATH` for the toolchains that have no IDE SDK model (Rust, Ruby, Deno, Zig, …).
+- A `vfox` tool window lists every discovered version and how each SDK kind is supported, with
+  *Rescan*, *Register as SDKs* and *Open Log* actions.
+- The version a project declares in `.vfox.toml` / `.tool-versions` / the legacy version files is
+  pre-selected, and a declaration that does not match an install exactly is resolved to one that
+  does (exact, then segment prefix, then the nearest release on the same `major.minor`).
+- vfox's `PATH` and variables reach the built-in terminal, and optionally Gradle's JVM, Maven's
+  home and Run/Debug configuration environments; a project's own IDE SDKs can be pointed at the
+  versions it declares (off by default).
+- Every scan is summarised in a balloon and recorded in full in a dedicated
+  `vfox-integrator.log`.
+- Runs in IntelliJ IDEA, WebStorm, PyCharm, GoLand, DataGrip and other IntelliJ Platform products;
+  each integration loads only where the bundled plugin it needs is present.
+
+See the plugin description and README for the full picture.
+
 ## [1.0.0-alpha01] - 2026-11-26
 
 ### Changed
@@ -15,8 +38,8 @@
   [LICENSE](LICENSE) — both required by the JetBrains Marketplace listing.
 - Signing and publishing wiring for the JetBrains Marketplace: `signPlugin` /
   `publishPlugin` take their secrets from the environment, `scripts/generate-signing-key.ps1`
-  creates the signing key pair outside the repository, and `scripts/publish.ps1` signs and
-  uploads to the `alpha` channel. See the README's *Publishing* section.
+  creates the signing key pair outside the repository, and `scripts/publish.ps1` signs the
+  distribution and uploads it. See the README's *Publishing* section.
 
 - Discovery of every SDK version installed by [vfox](https://vfox.dev): the vfox home is resolved
   from `VFOX_HOME`, `~/.vfox` or `~/.version-fox`, and SDK storage honours
