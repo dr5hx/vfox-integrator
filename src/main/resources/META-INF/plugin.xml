@@ -4,7 +4,7 @@
 
     <name>vfox Integrator</name>
 
-    <vendor url="https://github.com/dr5hx">dr5hx</vendor>
+    <vendor email="1165372212@qq.com" url="https://github.com/dr5hx">dr5hx</vendor>
 
     <description><![CDATA[
         Detects SDKs managed by <a href="https://vfox.dev">vfox</a> and offers every installed
