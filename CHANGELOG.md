@@ -2,6 +2,8 @@
 
 # vfox Integrator Changelog
 
+## [Unreleased]
+
 ## [1.0.0] - 2026-11-26
 
 First public release. The plugin detects SDKs managed by [vfox](https://vfox.dev) and offers every
@@ -23,8 +25,6 @@ installed version as a selectable SDK candidate in JetBrains IDEs.
 - Runs in IntelliJ IDEA, WebStorm, PyCharm, GoLand, DataGrip and other IntelliJ Platform products;
   each integration loads only where the bundled plugin it needs is present.
 
-See the plugin description and README for the full picture.
-
 ## [1.0.0-alpha01] - 2026-11-26
 
 ### Changed
@@ -40,7 +40,6 @@ See the plugin description and README for the full picture.
   `publishPlugin` take their secrets from the environment, `scripts/generate-signing-key.ps1`
   creates the signing key pair outside the repository, and `scripts/publish.ps1` signs the
   distribution and uploads it. See the README's *Publishing* section.
-
 - Discovery of every SDK version installed by [vfox](https://vfox.dev): the vfox home is resolved
   from `VFOX_HOME`, `~/.vfox` or `~/.version-fox`, and SDK storage honours
   `storage.sdkPath` in `config.yaml`. Both directory shapes vfox uses are searched — most SDKs live
@@ -111,3 +110,7 @@ See the plugin description and README for the full picture.
 - Cross-product support: each integration loads only where its bundled plugin is present, so one
   build runs in IntelliJ IDEA, WebStorm, PyCharm, GoLand and DataGrip. On start-up the plugin scans
   vfox in the background.
+
+[Unreleased]: https://github.com/dr5hx/vfox-integrator/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/dr5hx/vfox-integrator/compare/v1.0.0-alpha01...v1.0.0
+[1.0.0-alpha01]: https://github.com/dr5hx/vfox-integrator/commits/v1.0.0-alpha01
