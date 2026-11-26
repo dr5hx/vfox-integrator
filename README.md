@@ -1,5 +1,8 @@
 # vfox Integrator
 
+Source: <https://github.com/dr5hx/vfox-integrator> — releases:
+<https://github.com/dr5hx/vfox-integrator/releases>
+
 An IntelliJ Platform plugin that detects SDKs managed by [vfox](https://vfox.dev) and offers them as
 selectable SDK candidates in the IDE, so vfox paths no longer have to be registered by hand.
 
