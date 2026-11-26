@@ -1,5 +1,15 @@
 .gradle
 .idea
 .intellijPlatform
+.kotlin
 build
 runide.*.log
+
+# Signing material must never be committed. The key pair lives outside the repository
+# (scripts/generate-signing-key.ps1 writes it to ~/.vfox-integrator-signing), so these lines are
+# a backstop for the case where someone points the scripts at the working tree instead.
+*.pem
+*.crt
+*.p12
+*.jks
+password.txt

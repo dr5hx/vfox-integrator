@@ -219,6 +219,66 @@ The project compiles against IntelliJ IDEA Ultimate because it is the only editi
 SDK ecosystem it integrates with; Python and Go are resolved as marketplace plugins pinned per
 platform build.
 
+## Publishing to JetBrains Marketplace
+
+Two things are needed beyond the source: a **signing key pair**, which identifies the plugin author,
+and a **Marketplace token**, which authorizes the upload. Neither belongs in this repository.
+
+### Prepare once: the signing key pair
+
+```powershell
+pwsh -File scripts/generate-signing-key.ps1
+```
+
+It writes `chain.crt`, `private.pem` and `password.txt` to `~/.vfox-integrator-signing` (outside the
+working tree; `.gitignore` also blocks `*.pem`/`*.crt` as a backstop). **Keep the key**: it is the
+author's identity — a future release signed with a different key does not chain to this one, so
+losing it means starting the trust chain over. `-OpenSslPath` overrides openssl detection when
+nothing puts it on `PATH` (Git for Windows ships one, and the script finds it via `git --exec-path`).
+
+### Prepare once: the Marketplace account and first upload
+
+The **first version of a plugin must be uploaded by hand** — JetBrains does not accept it through
+the Gradle task. In the browser:
+
+1. Sign in at <https://plugins.jetbrains.com> with a JetBrains Account (create one if needed).
+2. **Add new plugin**, and give it the id `com.dr5hx.vfox.integrator` — it must match `plugin.xml`
+   exactly, because the id is what later uploads are matched against.
+3. Add a **license** (already in the repository as [LICENSE](LICENSE), MIT) and the vendor details.
+4. Upload `build/distributions/vfox-integrator-1.0.0-alpha01-signed.zip` (see below for building it
+   signed). Verify that the *uploaded* archive is the signed one.
+
+After that first upload, later versions go through Gradle.
+
+### Each release
+
+```powershell
+# 1. Bump `version` in gradle.properties and add a CHANGELOG.md entry — the Marketplace rejects a
+#    version it has already seen, and the changelog entry becomes the release's change notes.
+# 2. Publish. PUBLISH_TOKEN is prompted for if it is not already in the environment.
+pwsh -File scripts/publish.ps1                       # channel: alpha (the default)
+pwsh -File scripts/publish.ps1 -Channel default      # promote to a stable release
+pwsh -File scripts/publish.ps1 -DryRun               # build and sign, upload nothing
+```
+
+A non-default channel is a *separate repository*, so an `alpha` upload reaches
+`https://plugins.jetbrains.com/plugins/alpha/list` rather than everyone. The channel comes from
+`-Channel` / the `vfoxPublishChannel` Gradle property, defaulting to `alpha` because the current
+version is a pre-release.
+
+The underlying Gradle tasks, if you prefer to drive them yourself:
+
+| Task | What it does |
+|---|---|
+| `buildPlugin` | packages the distribution (unsigned) |
+| `signPlugin` | signs it, producing `*-signed.zip`; runs automatically before `publishPlugin` |
+| `verifyPluginSignature` | checks a signature against the certificate chain |
+| `publishPlugin` | uploads to the Marketplace (`patchChangelog` first) |
+
+Secrets reach the tasks through the environment — `CERTIFICATE_CHAIN`, `PRIVATE_KEY`,
+`PRIVATE_KEY_PASSWORD`, `PUBLISH_TOKEN` — which is also what a CI job supplies from its own secret
+store. No key material is ever written into a file inside the repository.
+
 ## Project layout
 
 ```
@@ -234,6 +294,8 @@ src/main/kotlin/com/dr5hx/vfox/
 └── VfoxStartupActivity.kt
 src/main/resources/META-INF/
 ├── plugin.xml          Core plugin descriptor
+├── pluginIcon.svg      Plugin logo, light themes
+├── pluginIcon_dark.svg ... dark themes
 ├── vfox-java.xml       Merged only where the Java plugin is present (Run/Debug env hook)
 ├── vfox-node.xml       ... JavaScript plugin (Node interpreter injector, project Node default)
 ├── vfox-go.xml         ... Go plugin (Go SDK injector, project Go SDK)
@@ -243,6 +305,9 @@ src/main/resources/META-INF/
 src/main/resources/messages/
 ├── VfoxBundle.properties        English (the default)
 └── VfoxBundle_zh_CN.properties  Chinese; chosen by the IDE's own language setting
+scripts/
+├── generate-signing-key.ps1   Creates the Marketplace signing key pair (outside the repo)
+└── publish.ps1                Signs and uploads to the Marketplace
 ```
 
 The per-product config files are what make the plugin cross-product: a file that is never merged

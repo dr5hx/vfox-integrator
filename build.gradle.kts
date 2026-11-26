@@ -153,6 +153,35 @@ intellijPlatform {
         }
     }
 
+    // -----------------------------------------------------------------------------------------
+    // Signing and publishing (JetBrains Marketplace)
+    // -----------------------------------------------------------------------------------------
+    //
+    // Every secret comes from the environment and never from a file inside the repository:
+    //
+    //   CERTIFICATE_CHAIN / PRIVATE_KEY / PRIVATE_KEY_PASSWORD  sign the distribution
+    //   PUBLISH_TOKEN                                          authorizes the upload
+    //
+    // `scripts/publish.ps1` exports those from PEM files kept outside the working tree and then
+    // runs `publishPlugin`; CI does the same from repository secrets. When no key is present the
+    // signing step is skipped entirely, so an ordinary `./gradlew buildPlugin` needs none of it.
+    signing {
+        certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+        privateKey = providers.environmentVariable("PRIVATE_KEY")
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+    }
+
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN")
+
+        // A pre-release belongs on a non-default channel: the Marketplace keeps `alpha` as a
+        // separate repository (https://plugins.jetbrains.com/plugins/alpha/list) instead of
+        // releasing to everyone, which is what a 1.0.0-alpha should be. Promoting it to the
+        // default channel is a deliberate release decision, so it comes from a property rather
+        // than being hardcoded here.
+        channels = listOf(providers.gradleProperty("vfoxPublishChannel").getOrElse("alpha"))
+    }
+
     pluginVerification {
         // Experimental and internal API usages are expected and deliberate (see the README): the
         // Gradle JVM resolver, the terminal customizer and the Maven/Node/Go/Python integrations all

@@ -11,6 +11,13 @@
 
 ### Added
 
+- A dark-theme plugin logo (`pluginIcon_dark.svg`) beside the light one, and an MIT
+  [LICENSE](LICENSE) — both required by the JetBrains Marketplace listing.
+- Signing and publishing wiring for the JetBrains Marketplace: `signPlugin` /
+  `publishPlugin` take their secrets from the environment, `scripts/generate-signing-key.ps1`
+  creates the signing key pair outside the repository, and `scripts/publish.ps1` signs and
+  uploads to the `alpha` channel. See the README's *Publishing* section.
+
 - Discovery of every SDK version installed by [vfox](https://vfox.dev): the vfox home is resolved
   from `VFOX_HOME`, `~/.vfox` or `~/.version-fox`, and SDK storage honours
   `storage.sdkPath` in `config.yaml`. Both directory shapes vfox uses are searched — most SDKs live
