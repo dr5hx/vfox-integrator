@@ -1,0 +1,11 @@
+<!--
+  Merged only when the Maven plugin is present (IntelliJ IDEA Ultimate, ...).
+  Maven exposes no extension point for contributing a home, so this file only wires the project-open
+  hook; the write to `MavenGeneralSettings` happens in the service, which needs the Maven plugin's
+  classes and therefore must not be loaded without it.
+-->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.dr5hx.vfox.buildtools.VfoxMavenProjectActivity"/>
+    </extensions>
+</idea-plugin>

@@ -1,0 +1,10 @@
+<!--
+  Merged only when the Gradle plugin is present (IntelliJ IDEA, Android Studio, ...).
+  Both `GradleJvmResolver` and `GradleSettings` live in the Gradle plugin, so the resolver class can
+  only be loaded where it exists.
+-->
+<idea-plugin>
+    <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
+        <gradleJvmResolver implementation="com.dr5hx.vfox.buildtools.VfoxGradleJvmResolver"/>
+    </extensions>
+</idea-plugin>

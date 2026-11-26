@@ -1,0 +1,15 @@
+<!--
+  Merged only when the JavaScript plugin is present (WebStorm, IDEA Ultimate, PhpStorm, ...).
+  The Node.js interpreter model lives in the JavaScript plugin, not in the platform and not in an
+  SdkType, so Node needs a dedicated injector rather than the generic one.
+
+  The entries here reference JavaScript-plugin types (`NodeJsLocalInterpreter*`, `NodeJsInterpreter*`)
+  directly, so they must live in this file: a config file that is never merged means its classes are
+  never loaded, so neither can fail in a product without the plugin.
+-->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.dr5hx.vfox">
+        <sdkInjector implementation="com.dr5hx.vfox.inject.node.NodeInterpreterInjector"/>
+        <projectInitializer implementation="com.dr5hx.vfox.inject.node.VfoxNodeProjectInterpreter"/>
+    </extensions>
+</idea-plugin>

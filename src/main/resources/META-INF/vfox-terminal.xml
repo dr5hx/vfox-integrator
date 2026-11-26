@@ -1,0 +1,9 @@
+<!--
+  Merged only when the Terminal plugin is present (essentially every IDE, but kept optional so a
+  trimmed distribution without it still loads this plugin).
+-->
+<idea-plugin>
+    <extensions defaultExtensionNs="org.jetbrains.plugins.terminal">
+        <shellExecOptionsCustomizer implementation="com.dr5hx.vfox.buildtools.TerminalEnvCustomizer"/>
+    </extensions>
+</idea-plugin>

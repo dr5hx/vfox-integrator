@@ -1,0 +1,14 @@
+<!--
+  Merged only when the Java plugin is present (IntelliJ IDEA, Android Studio).
+
+  Java *SDK* registration is not here: it goes through the generic `SdkTypeInjector`, which resolves
+  `JavaSdkImpl` by name and so is safe in every product (it resolves to nothing where the Java plugin
+  is absent). What must stay in this file is the Run/Debug environment hook, whose class references
+  `com.intellij.execution.RunConfigurationExtension` — a Java-plugin type — and therefore cannot be
+  loaded in a product without it (WebStorm, PyCharm, DataGrip, ...).
+-->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <runConfigurationExtension implementation="com.dr5hx.vfox.buildtools.VfoxRunConfigExtension"/>
+    </extensions>
+</idea-plugin>

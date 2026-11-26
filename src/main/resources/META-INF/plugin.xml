@@ -1,0 +1,101 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>com.dr5hx.vfox.integrator</id>
+
+    <name>vfox Integrator</name>
+
+    <vendor url="https://github.com/dr5hx">dr5hx</vendor>
+
+    <description><![CDATA[
+        Detects SDKs managed by <a href="https://vfox.dev">vfox</a> and offers every installed
+        version as a selectable SDK candidate in JetBrains IDEs, so vfox paths no longer have to be
+        registered by hand.
+        <ul>
+            <li>Covers every plugin <code>vfox available</code> offers: registers each installed
+                version as an IDE SDK where the IDE models one (Java, Kotlin, Python, Go, Node.js),
+                wires the build tools (Maven, Gradle), and puts the rest — Rust, Ruby, Deno, Zig,
+                and the other toolchains with no IDE SDK model — onto <code>PATH</code> so their
+                command line works inside the IDE.</li>
+            <li>Pre-selects the version declared by the project's <code>.vfox.toml</code> /
+                <code>.tool-versions</code> / legacy version files.</li>
+            <li>Puts vfox's <code>PATH</code> and variables into the built-in terminal, offers a
+                vfox JDK to Gradle, points Maven's home at a vfox Maven, and adds vfox variables to
+                Run/Debug configuration environments.</li>
+            <li>Lists what it found in a <code>vfox</code> tool window and a dedicated log file.</li>
+        </ul>
+        Works in IntelliJ IDEA, WebStorm, PyCharm, GoLand, DataGrip and other IntelliJ Platform
+        products; each integration is enabled only where the bundled plugin it needs is present.
+    ]]></description>
+
+    <!-- Always present in every IntelliJ Platform product. -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+
+    <!--
+      Per-product integrations. Each is declared optional with its own config-file so that
+      products lacking the bundled plugin still load this plugin instead of refusing it
+      (the Java plugin, for example, exists only in IntelliJ IDEA / Android Studio).
+    -->
+    <depends optional="true" config-file="vfox-java.xml">com.intellij.java</depends>
+    <depends optional="true" config-file="vfox-node.xml">JavaScript</depends>
+    <depends optional="true" config-file="vfox-go.xml">org.jetbrains.plugins.go</depends>
+    <depends optional="true" config-file="vfox-terminal.xml">org.jetbrains.plugins.terminal</depends>
+    <depends optional="true" config-file="vfox-gradle.xml">com.intellij.gradle</depends>
+    <depends optional="true" config-file="vfox-maven.xml">org.jetbrains.idea.maven</depends>
+
+    <resource-bundle>messages.VfoxBundle</resource-bundle>
+
+    <extensionPoints>
+        <!--
+          Contributed by the per-product config files below (vfox-java.xml, vfox-node.xml, ...).
+          The namespace `com.dr5hx.vfox` is declared explicitly via qualifiedName so it matches the
+          ExtensionPointName constants in code and does not depend on the plugin id.
+        -->
+        <extensionPoint qualifiedName="com.dr5hx.vfox.sdkInjector"
+                        interface="com.dr5hx.vfox.inject.SdkInjector" dynamic="true"/>
+        <!--
+          Per-project steps that run after SDK registration (see VfoxProjectInitializer). Contributed
+          by the per-product config files, so an integration that references a bundled plugin's API
+          is never loaded where that plugin is absent.
+        -->
+        <extensionPoint qualifiedName="com.dr5hx.vfox.projectInitializer"
+                        interface="com.dr5hx.vfox.inject.VfoxProjectInitializer" dynamic="true"/>
+    </extensionPoints>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.dr5hx.vfox.settings.VfoxSettings"/>
+        <applicationService serviceInterface="com.dr5hx.vfox.core.VfoxService"
+                            serviceImplementation="com.dr5hx.vfox.core.VfoxServiceImpl"/>
+
+        <notificationGroup id="vfox" displayType="BALLOON" isLogByDefault="true"/>
+
+        <toolWindow id="vfox"
+                    anchor="right"
+                    icon="AllIcons.Toolwindows.ToolWindowPalette"
+                    factoryClass="com.dr5hx.vfox.ui.VfoxToolWindowFactory"/>
+
+        <postStartupActivity implementation="com.dr5hx.vfox.VfoxStartupActivity"/>
+
+        <!--
+          The page name comes from the bundle by key rather than a literal `displayName`, so it
+          follows the IDE's language. `displayName` would win over `key` when both are present, which
+          is why it is absent: a hardcoded name would stay English under a localized IDE.
+        -->
+        <applicationConfigurable parentId="tools"
+                                 id="com.dr5hx.vfox.settings.VfoxSettingsConfigurable"
+                                 key="settings.displayName"
+                                 bundle="messages.VfoxBundle"
+                                 instance="com.dr5hx.vfox.settings.VfoxSettingsConfigurable"/>
+    </extensions>
+
+    <!--
+      Points the project's project-SDK slot at the SDK the project declares in vfox (Java, Python,
+      Kotlin). Registered from the base plugin because it uses only platform APIs — the SDK is
+      resolved by class name and the write is `ProjectRootManager.setProjectSdk` — so it is safe in
+      every product. Go and Node keep their selections in their own plugins, so those live in
+      vfox-go.xml and vfox-node.xml.
+    -->
+    <extensions defaultExtensionNs="com.dr5hx.vfox">
+        <projectInitializer implementation="com.dr5hx.vfox.inject.VfoxProjectSdkInitializer"/>
+    </extensions>
+</idea-plugin>

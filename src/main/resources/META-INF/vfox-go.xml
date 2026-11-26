@@ -1,0 +1,12 @@
+<!--
+  Merged only when the Go plugin is present (GoLand, IntelliJ IDEA, ...).
+  Go bypasses the platform SDK model entirely and keeps its roots in the Go plugin's own GoSdkList,
+  so it needs a dedicated injector rather than the generic SdkType one. The project-SDK write
+  references Go plugin types (`GoSdkService`, `GoSdk`) directly, so it must live here too.
+-->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.dr5hx.vfox">
+        <sdkInjector implementation="com.dr5hx.vfox.inject.go.GoSdkInjector"/>
+        <projectInitializer implementation="com.dr5hx.vfox.inject.go.VfoxGoProjectSdk"/>
+    </extensions>
+</idea-plugin>
